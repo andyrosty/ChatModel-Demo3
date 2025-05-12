@@ -1,25 +1,38 @@
 <!DOCTYPE html>
+<!-- Thymeleaf template for the chat interface -->
+<!-- The xmlns:th attribute enables Thymeleaf templating features -->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <!-- Basic page metadata -->
     <title>AI Chat Assistant</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- External resources -->
+    <!-- Roboto font from Google Fonts for clean, modern typography -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons used throughout the interface -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Showdown library for converting Markdown to HTML in the AI responses -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
+    <!-- CSS styles for the chat interface -->
     <style>
+        /* CSS variables for consistent theming throughout the application */
         :root {
-            --primary-color: #4361ee;
-            --secondary-color: #3f37c9;
-            --accent-color: #4895ef;
-            --background-color: #f8f9fa;
-            --text-color: #333;
-            --light-gray: #e9ecef;
-            --dark-gray: #6c757d;
-            --success-color: #4CAF50;
-            --user-bubble-color: #e9f5ff;
-            --ai-bubble-color: #f0f7ff;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --border-radius: 12px;
+            /* Color palette */
+            --primary-color: #4361ee;      /* Primary blue color for buttons and accents */
+            --secondary-color: #3f37c9;    /* Darker blue for hover states and gradients */
+            --accent-color: #4895ef;       /* Lighter blue for focus states */
+            --background-color: #f8f9fa;   /* Light background color for the page */
+            --text-color: #333;            /* Dark gray for main text */
+            --light-gray: #e9ecef;         /* Light gray for borders and subtle elements */
+            --dark-gray: #6c757d;          /* Darker gray for secondary text */
+            --success-color: #4CAF50;      /* Green for success states */
+            --user-bubble-color: #e9f5ff;  /* Light blue for user message bubbles */
+            --ai-bubble-color: #f0f7ff;    /* Very light blue for AI message bubbles */
+
+            /* Common styles */
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Consistent shadow for elements */
+            --border-radius: 12px;                   /* Rounded corners for elements */
         }
 
         * {
@@ -261,15 +274,18 @@
     </style>
 </head>
 <body>
+    <!-- Page header with title and subtitle -->
     <div class="header">
         <h1>AI Chat Assistant</h1>
         <p>Ask me anything and I'll do my best to help you</p>
     </div>
 
+    <!-- Main chat container that holds all chat elements -->
     <div class="chat-container">
         <div class="chat-box">
+            <!-- Area where messages are displayed -->
             <div class="chat-messages">
-                <!-- Welcome message -->
+                <!-- Static welcome message that always appears -->
                 <div class="message message-ai">
                     <div class="message-header">
                         <i class="fas fa-robot"></i> AI Assistant
@@ -279,28 +295,32 @@
                     </div>
                 </div>
 
-                <!-- User question if exists -->
+                <!-- User question - only displayed if a question exists in the model -->
+                <!-- The th:if Thymeleaf attribute conditionally renders this element -->
                 <div class="message message-user" th:if="${question}">
                     <div class="message-header">
                         <i class="fas fa-user"></i> You
                     </div>
                     <div class="message-bubble">
+                        <!-- th:text replaces the content with the value from the model -->
                         <p th:text="${question}"></p>
                     </div>
                 </div>
 
-                <!-- AI response if exists -->
+                <!-- AI response - only displayed if an answer exists in the model -->
                 <div class="message message-ai" th:if="${answer}">
                     <div class="message-header">
                         <i class="fas fa-robot"></i> AI Assistant
                     </div>
                     <div class="message-bubble">
+                        <!-- The raw markdown content is stored here but hidden -->
                         <span id="markdown-content" th:text="${answer}" style="display: none;"></span>
+                        <!-- This div will contain the rendered HTML from the markdown -->
                         <div id="rendered-html"></div>
                     </div>
                 </div>
 
-                <!-- Typing indicator -->
+                <!-- Typing indicator animation (hidden by default, shown when submitting) -->
                 <div class="typing-indicator" id="typing-indicator">
                     <span></span>
                     <span></span>
@@ -308,12 +328,16 @@
                 </div>
             </div>
 
+            <!-- Input area for user to type and submit questions -->
             <div class="chat-input-container">
-                <form th:action="@{/askAnything}" th:method="post" id="chat-form">
+                <!-- Form that submits to the /askQuestion endpoint in QuestionController -->
+                <form th:action="@{/askQuestion}" th:method="post" id="chat-form">
                     <div class="chat-input">
+                        <!-- Text input for the question, pre-filled with previous question if any -->
                         <input type="text" name="question" id="question-input" 
                                placeholder="Type your question here..." 
                                th:value="${question}" required />
+                        <!-- Submit button with icon -->
                         <button type="submit">
                             Send <i class="fas fa-paper-plane"></i>
                         </button>
@@ -323,42 +347,48 @@
         </div>
     </div>
 
-    <!-- JavaScript to Convert Markdown to HTML and handle interactions -->
+    <!-- JavaScript to handle client-side functionality -->
     <script>
+        // Execute code when the DOM is fully loaded
         document.addEventListener("DOMContentLoaded", function() {
-            // Scroll to bottom of chat
+            // Get reference to the chat messages container
             const chatMessages = document.querySelector('.chat-messages');
+
+            // Automatically scroll to the bottom of the chat to show the latest messages
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            // Convert Markdown to HTML if content exists
+            // Process and render Markdown content from AI responses
             const markdownContent = document.getElementById("markdown-content");
             if (markdownContent && markdownContent.innerText.trim() !== "") {
-                // Initialize Showdown converter
+                // Initialize Showdown converter with extended features enabled
                 const converter = new showdown.Converter({
-                    tables: true,
-                    simplifiedAutoLink: true,
-                    strikethrough: true,
-                    tasklists: true
+                    tables: true,              // Enable table syntax
+                    simplifiedAutoLink: true,  // Automatically convert URLs to links
+                    strikethrough: true,       // Enable strikethrough syntax
+                    tasklists: true            // Enable GitHub-style task lists
                 });
 
-                // Convert Markdown to HTML
+                // Convert the Markdown text to HTML
                 const htmlContent = converter.makeHtml(markdownContent.innerText);
 
-                // Render the converted HTML
+                // Insert the converted HTML into the rendered-html div
                 document.getElementById("rendered-html").innerHTML = htmlContent;
             }
 
-            // Form submission with typing indicator
+            // Handle form submission and show typing indicator
             const chatForm = document.getElementById('chat-form');
             const typingIndicator = document.getElementById('typing-indicator');
 
             chatForm.addEventListener('submit', function(e) {
                 const questionInput = document.getElementById('question-input');
+
+                // Only show typing indicator if the question isn't empty
                 if (questionInput.value.trim() !== '') {
-                    // Show typing indicator
+                    // Display the typing animation to indicate the system is processing
                     typingIndicator.style.display = 'block';
 
-                    // Scroll to show typing indicator
+                    // Scroll down after a short delay to ensure the typing indicator is visible
+                    // This improves user experience by showing the loading state
                     setTimeout(() => {
                         chatMessages.scrollTop = chatMessages.scrollHeight;
                     }, 100);
