@@ -142,14 +142,7 @@ The application provides two endpoints for interacting with the AI:
   }
   ```
 
-## Screenshots
-
-[Include screenshots of your application here]
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-[Specify your license here]
