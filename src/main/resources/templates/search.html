@@ -267,8 +267,8 @@
         <div class="search-box">
             <!-- Search form -->
             <div class="search-form">
-                <!-- Form that submits to the /askQuestion endpoint in MovieSearchController -->
-                <form th:action="@{/askQuestion}" th:method="post" id="search-form">
+                <!-- Form that submits to the /searchMovies endpoint in MovieSearchController -->
+                <form th:action="@{/searchMovies}" th:method="post" id="search-form">
                     <div class="search-input-container">
                         <!-- Text input for the search query, pre-filled with previous query if any -->
                         <input type="text" name="question" id="question-input" 

@@ -33,14 +33,14 @@ public class QuestionController {
 
     /**
      * Handles GET requests to the root URL.
-     * Displays the main chat page to the user.
+     * Displays the main search page to the user.
      * 
-     * @return The name of the view template to render (chat.html)
+     * @return The name of the view template to render (search.html)
      */
     @GetMapping("/")
     public String ShowChatPage(){
-        // Returns the name of the template to be rendered (chat.html)
-        return "chat";
+        // Returns the name of the template to be rendered (search.html)
+        return "search";
     }
 
     /**
@@ -58,11 +58,11 @@ public class QuestionController {
 
     /**
      * Handles POST requests to /askQuestion endpoint.
-     * This endpoint is designed for form submissions from the chat page.
+     * This endpoint is designed for form submissions from the search page.
      * 
      * @param questionText The text of the user's question from the form
      * @param model The Spring Model object to add attributes for the view
-     * @return The name of the view template to render (chat.html)
+     * @return The name of the view template to render (search.html)
      */
     @PostMapping("/askQuestion")
     public String askQuestion(@RequestParam("question") String questionText, Model model){
@@ -76,7 +76,7 @@ public class QuestionController {
         model.addAttribute("question", questionText);
         model.addAttribute("answer", answer.answer());
 
-        // Return to the chat page with the model attributes
-        return "chat";
+        // Return to the search page with the model attributes
+        return "search";
     }
 }
