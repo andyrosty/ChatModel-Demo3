@@ -51,8 +51,8 @@ public class QuestionController {
      * @return An Answer object containing the AI-generated response
      */
     @PostMapping("/ask")
-    public Answer getAnswer(@RequestBody Question question){
-        // Forwards the question to the OpenAI service and returns the answer
+    @org.springframework.web.bind.annotation.ResponseBody
+    public Answer getAnswer(@RequestBody Question question) {
         return openAIService.getAnswer(question);
     }
 

@@ -142,6 +142,31 @@ The application provides two endpoints for interacting with the AI:
   }
   ```
 
+  
+## Running Tests
+
+This project includes unit tests (service layer with Mockito) and web MVC tests (using MockMvc). To run the full test suite locally:
+
+```bash
+# Using the Maven Wrapper
+./mvnw test
+
+# Or with Maven
+mvn test
+```
+
+Tests included:
+- `OpenAIServiceImplTest` (mocks the AI ChatModel)
+- `QuestionControllerTest` (exercises controller endpoints)
+- `ChatModelDemo3ApplicationTests` (Spring context load smoke test)
+
+## Continuous Integration
+
+A GitHub Actions workflow is provided at `.github/workflows/ci.yml`. It runs on pushes and pull requests to `main`/`master`, sets up Java 21, caches the Maven repository, and runs:
+
+```bash
+mvn -B clean test
+```
 
 ## Contributing
 
