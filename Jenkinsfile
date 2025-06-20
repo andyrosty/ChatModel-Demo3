@@ -82,7 +82,7 @@ pipeline {
     }
     
     post {
-        always {
+        cleanup {
             cleanWs()
         }
         success {
