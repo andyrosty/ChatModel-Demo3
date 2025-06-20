@@ -22,7 +22,11 @@ pipeline {
         
         stage('Test') {
             steps {
-                sh 'mvn test'
+                sh '''
+                  echo "Starting Maven Build"
+                  mvn clean package
+                  echo "Build finished"
+                '''
             }
             post {
                 always {
