@@ -79,17 +79,12 @@ pipeline {
                 }
             }
         }
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
     }
     
-    post {
-        cleanup {
-            cleanWs()
-        }
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed. Please check the logs for details.'
-        }
-    }
 }
